@@ -1,0 +1,11 @@
+# Added 9 Nov: serve the fine config from a local copy of
+# github.com/Yimingzha0/spring-petclinic-fine-config (the repo config-server:0.1.2 uses),
+# using the config server's "native" (file system) backend, so the runs need no internet.
+# Delete this file to go back to the original.
+services:
+  config-server:
+    environment:
+      - SPRING_PROFILES_ACTIVE=native
+      - SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS=file:/config-repo/
+    volumes:
+      - /home/juhic/sde/petclinic-fine-config:/config-repo:ro

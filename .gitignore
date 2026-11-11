@@ -1,0 +1,40 @@
+# ------------------------------------------------------------------
+# Whitelist: ignore everything, then allow only what belongs in the repo.
+# Raw data (my_requests.csv, HWiNFO logs, Locust logs) goes into a
+# GitHub Release zip instead (see README).
+# ------------------------------------------------------------------
+/*
+!/.gitignore
+!/README.md
+!/requirements.txt
+!/*.sh
+!/run_times.log
+!/analysis/
+!/script_data/
+
+# --- analysis: scripts, final trial data, results, figures, authors' clean data
+/analysis/*
+!/analysis/*.py
+!/analysis/my_trials.csv
+!/analysis/results*.txt
+!/analysis/fig_*.png
+!/analysis/fig_by_load.pdf
+!/analysis/clean_data/
+
+# --- script_data: only the authors' README and the (fixed) experiment kit
+/script_data/*
+!/script_data/paper/
+/script_data/paper/*
+!/script_data/paper/README.md
+!/script_data/paper/experiment/
+
+# --- never: raw run outputs, caches, Windows download markers
+**/__pycache__/
+**/results/
+**/result05/
+**/old_runs/
+**/cpu_*.csv
+**/locust_report_*.csv
+*:Zone.Identifier
+!/CHANGES.md
+!/CHANGES.diff

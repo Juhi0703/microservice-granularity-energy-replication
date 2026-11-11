@@ -1,0 +1,11 @@
+# Added 8-9 Nov: serve the PetClinic config from a local copy of
+# github.com/spring-petclinic/spring-petclinic-microservices-config (commit 323993c),
+# using the config server's "native" (file system) backend, so the runs need no internet.
+# Delete this file to go back to the original.
+services:
+  config-server:
+    environment:
+      - SPRING_PROFILES_ACTIVE=native
+      - SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS=file:/config-repo/
+    volumes:
+      - /home/juhic/sde/petclinic-config:/config-repo:ro

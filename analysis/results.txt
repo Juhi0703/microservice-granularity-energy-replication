@@ -1,0 +1,140 @@
+====================================================================== 
+RQ2: response time per request
+
+pet: response_time
+           coarse      medium        fine
+count  1254439.00  1254950.00  1250159.00
+mean       102.50      109.03      108.25
+std         36.14       37.22       36.43
+min          2.52        7.66        7.84
+25%         77.09       82.71       82.50
+50%        100.71      107.00      105.52
+75%        126.91      134.67      132.65
+max        202.85      213.71      209.87
+  coarse vs medium: Holm p = 0, Cliff d = -0.099 (negligible)
+  coarse vs fine: Holm p = 0, Cliff d = -0.085 (negligible)
+  medium vs fine: Holm p = 5.27e-101, Cliff d = 0.016 (negligible)
+
+train: response_time
+           coarse      medium
+count  1270034.00  1232079.00
+mean       116.28      120.92
+std         71.88       82.39
+min          1.58        1.85
+25%         58.76       54.24
+50%        102.14      103.51
+75%        160.96      171.22
+max        323.31      369.75
+  coarse vs medium: Holm p = 1.43e-18, Cliff d = -0.006 (negligible)
+
+====================================================================== 
+RQ3: response time per trial
+
+OLS for response_time (adj. R2 = 0.759)
+                  coef  holm_p
+const          25.9404  0.0000
+users_120      29.7904  0.0000
+users_200      61.6949  0.0000
+users_320      93.4598  0.0000
+users_400     108.0084  0.0000
+granu_fine      6.4389  0.3801
+granu_medium    4.4360  0.3801
+system_train    3.6849  0.3801
+
+====================================================================== 
+RQ1: energy per trial (HWiNFO CPU package, J)   (250 trials)
+
+pet: energy_j
+        coarse   medium     fine
+count    50.00    50.00    50.00
+mean   1064.51  1080.76  1063.62
+std     261.42   255.61   226.92
+min     674.92   704.64   682.99
+25%     848.05   861.85   837.25
+50%    1006.47  1022.59  1022.00
+75%    1268.43  1301.60  1230.05
+max    1499.54  1466.41  1403.18
+  coarse vs medium: Holm p = 1, Cliff d = -0.089 (negligible)
+  coarse vs fine: Holm p = 1, Cliff d = 0.044 (negligible)
+  medium vs fine: Holm p = 1, Cliff d = 0.082 (negligible)
+
+train: energy_j
+        coarse   medium
+count    50.00    50.00
+mean   1404.22  2065.83
+std     366.58  1011.06
+min     825.10   940.90
+25%    1094.30  1221.70
+50%    1340.84  1594.35
+75%    1712.67  2640.67
+max    2003.34  4039.66
+  coarse vs medium: Holm p = 0.00268, Cliff d = -0.349 (medium)
+
+OLS for energy_j (adj. R2 = 0.697)
+                   coef  holm_p
+const          472.1557  0.0000
+users_120      102.0422  0.1514
+users_200      284.1211  0.0002
+users_320      679.5215  0.0000
+users_400     1089.4013  0.0000
+granu_fine     160.4459  0.0326
+granu_medium   338.9237  0.0000
+system_train   662.3903  0.0000
+
+====================================================================== 
+Energy proxy: CPU cores used per trial   (250 trials)
+
+pet: cpu_cores
+       coarse  medium   fine
+count   50.00   50.00  50.00
+mean     0.68    0.79   0.82
+std      0.36    0.41   0.40
+min      0.13    0.16   0.17
+25%      0.40    0.44   0.47
+50%      0.63    0.72   0.73
+75%      0.99    1.14   1.14
+max      1.23    1.41   1.46
+  coarse vs medium: Holm p = 0.218, Cliff d = -0.186 (small)
+  coarse vs fine: Holm p = 0.165, Cliff d = -0.223 (small)
+  medium vs fine: Holm p = 0.612, Cliff d = -0.059 (negligible)
+
+train: cpu_cores
+       coarse  medium
+count   50.00   50.00
+mean     1.45    3.02
+std      0.72    2.36
+min      0.38    0.60
+25%      0.83    1.17
+50%      1.26    1.86
+75%      2.06    4.23
+max      2.60    7.71
+  coarse vs medium: Holm p = 0.00314, Cliff d = -0.343 (medium)
+
+OLS for cpu_cores (adj. R2 = 0.635)
+                coef  holm_p
+const        -0.5393  0.0020
+users_120     0.2047  0.2387
+users_200     0.5279  0.0061
+users_320     1.3216  0.0000
+users_400     2.2107  0.0000
+granu_fine    0.5058  0.0061
+granu_medium  0.8374  0.0000
+system_train  1.5020  0.0000
+
+Failure rate by configuration:
+ users          40   120  200  320  400
+system granu                          
+pet    coarse  0.0  0.0  0.0  0.0  0.0
+       fine    0.0  0.0  0.0  0.0  0.0
+       medium  0.0  0.0  0.0  0.0  0.0
+train  coarse  0.0  0.0  0.0  0.0  0.0
+       medium  0.0  0.0  0.0  0.0  0.0
+
+Actual requests per second (n_requests / 120 s):
+ users           40     120    200    320    400
+system granu                                   
+pet    coarse  40.0  119.0  196.7  310.7  385.0
+       fine    40.0  119.0  196.7  310.7  385.0
+       medium  40.0  119.0  196.7  310.7  385.0
+train  coarse  39.9  120.0  199.7  318.7  397.3
+       medium  39.8  120.0  199.7  318.7  384.9

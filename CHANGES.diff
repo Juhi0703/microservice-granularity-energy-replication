@@ -1,0 +1,1513 @@
+diff -ruN original/paper/experiment/pet_system/coarse/auto_coarse.sh fixed/paper/experiment/pet_system/coarse/auto_coarse.sh
+--- original/paper/experiment/pet_system/coarse/auto_coarse.sh	2026-11-04 22:44:10.918728674 +0530
++++ fixed/paper/experiment/pet_system/coarse/auto_coarse.sh	2026-11-04 22:49:56.271462967 +0530
+@@ -1,9 +1,14 @@
+ #!/bin/bash
++# --- added for the WSL replication (see CHANGES.md) ---
++cd "$(dirname "$0")"                 # always run from this folder
++mkdir -p result05/coarse              # Locust log folder (did not exist)
++LOCUST_CPUS=${LOCUST_CPUS:-0,1}      # Locust on cores 0-1; containers get 2-11
++# ---------------------------------------------------------
+ 
+-iterations=10
++iterations=${ITER:-10}
+ #duration between each iteration
+ delay=30
+-script_path="../coarse_script/locust_running.py"
++script_path="./locust_running.py"
+ 
+ users_1=40
+ users_2=120
+@@ -15,12 +20,6 @@
+ 
+ runtime="120s"
+ 
+-printf "level_0 groups begins...\n"
+-for ((i=1; i<=iterations; i++))
+-do
+-    sleep 120
+-
+-done
+ 
+ printf "level_1 groups begins...\n"
+ 
+@@ -28,7 +27,7 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_1, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path -u $users_1 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path -u $users_1 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -42,7 +41,7 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_2, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path -u $users_2 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path -u $users_2 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -56,7 +55,7 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_3, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path -u $users_3 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path -u $users_3 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -70,7 +69,7 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_4, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path -u $users_4 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path -u $users_4 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -85,7 +84,7 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_5, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path -u $users_5 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path -u $users_5 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+diff -ruN original/paper/experiment/pet_system/coarse/locust_running.py fixed/paper/experiment/pet_system/coarse/locust_running.py
+--- original/paper/experiment/pet_system/coarse/locust_running.py	2026-11-04 22:43:38.574728727 +0530
++++ fixed/paper/experiment/pet_system/coarse/locust_running.py	2026-11-04 22:49:56.258480684 +0530
+@@ -87,7 +87,7 @@
+ class PetClinicUser(HttpUser):
+     tasks = [AllTasks]
+     wait_time = constant_pacing(pacing)
+-    host = "http://145.108.225.14:8080/api/"
++    host = "http://localhost:8080/api/"
+ 
+ 
+ if __name__ == "__main__":
+diff -ruN original/paper/experiment/pet_system/fine/auto_fine.sh fixed/paper/experiment/pet_system/fine/auto_fine.sh
+--- original/paper/experiment/pet_system/fine/auto_fine.sh	2026-11-04 22:44:27.066728647 +0530
++++ fixed/paper/experiment/pet_system/fine/auto_fine.sh	2026-11-04 22:49:56.274277667 +0530
+@@ -1,9 +1,14 @@
+ #!/bin/bash
++# --- added for the WSL replication (see CHANGES.md) ---
++cd "$(dirname "$0")"                 # always run from this folder
++mkdir -p result05/fine              # Locust log folder (did not exist)
++LOCUST_CPUS=${LOCUST_CPUS:-0,1}      # Locust on cores 0-1; containers get 2-11
++# ---------------------------------------------------------
+ 
+-iterations=10
++iterations=${ITER:-10}
+ #duration between each iteration
+ delay=30
+-script_path="../fine_script/locust_running.py"
++script_path="./locust_running.py"
+ 
+ users_1=40
+ users_2=120
+@@ -17,12 +22,6 @@
+ pacing=1
+ 
+ 
+-printf "level_0 groups begins...\n"
+-for ((i=1; i<=iterations; i++))
+-do
+-    sleep 120
+-
+-done
+ 
+ printf "level_1 groups begins...\n"
+ 
+@@ -30,7 +29,7 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_1, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path -u $users_1 -r $rate --run-time $runtime --iteration $i
++    taskset -c "$LOCUST_CPUS" python $script_path -u $users_1 -r $rate --run-time $runtime --iteration $i
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+         sleep $delay
+@@ -45,7 +44,7 @@
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_2, rate=$rate, runtime=$runtime, iteration=$i"
+ 
+-    python $script_path -u $users_2 -r $rate --run-time $runtime --iteration $i
++    taskset -c "$LOCUST_CPUS" python $script_path -u $users_2 -r $rate --run-time $runtime --iteration $i
+ 
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -61,7 +60,7 @@
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_3, rate=$rate, runtime=$runtime, iteration=$i"
+ 
+-    python $script_path -u $users_3 -r $rate --run-time $runtime --iteration $i
++    taskset -c "$LOCUST_CPUS" python $script_path -u $users_3 -r $rate --run-time $runtime --iteration $i
+ 
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -76,7 +75,7 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_4, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path -u $users_4 -r $rate --run-time $runtime --iteration $i
++    taskset -c "$LOCUST_CPUS" python $script_path -u $users_4 -r $rate --run-time $runtime --iteration $i
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+         sleep $delay
+@@ -90,7 +89,7 @@
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_5, rate=$rate, runtime=$runtime, iteration=$i"
+ 
+-    python $script_path -u $users_5 -r $rate --run-time $runtime --iteration $i
++    taskset -c "$LOCUST_CPUS" python $script_path -u $users_5 -r $rate --run-time $runtime --iteration $i
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+         sleep $delay
+diff -ruN original/paper/experiment/pet_system/fine/locust_running.py fixed/paper/experiment/pet_system/fine/locust_running.py
+--- original/paper/experiment/pet_system/fine/locust_running.py	2026-11-04 22:43:58.666728694 +0530
++++ fixed/paper/experiment/pet_system/fine/locust_running.py	2026-11-04 22:49:56.259419437 +0530
+@@ -88,7 +88,7 @@
+ class PetClinicUser(HttpUser):
+     tasks = [AllTasks]
+     wait_time = constant_pacing(pacing)
+-    host = "http://145.108.225.14:8080/api/"
++    host = "http://localhost:8080/api/"
+ 
+ 
+ if __name__ == "__main__":
+diff -ruN original/paper/experiment/pet_system/medium/auto_med.sh fixed/paper/experiment/pet_system/medium/auto_med.sh
+--- original/paper/experiment/pet_system/medium/auto_med.sh	2026-11-04 22:44:19.030728660 +0530
++++ fixed/paper/experiment/pet_system/medium/auto_med.sh	2026-11-04 22:49:56.272820043 +0530
+@@ -1,9 +1,14 @@
+ #!/bin/bash
++# --- added for the WSL replication (see CHANGES.md) ---
++cd "$(dirname "$0")"                 # always run from this folder
++mkdir -p result05/medium              # Locust log folder (did not exist)
++LOCUST_CPUS=${LOCUST_CPUS:-0,1}      # Locust on cores 0-1; containers get 2-11
++# ---------------------------------------------------------
+ 
+-iterations=10
++iterations=${ITER:-10}
+ #duration between each iteration
+ delay=30
+-script_path="../med_script/locust_running.py"
++script_path="./locust_running.py"
+ 
+ users_1=40
+ users_2=120
+@@ -15,11 +20,6 @@
+ 
+ runtime="120s"
+ 
+-printf "level_0 groups begins...\n"
+-for ((i=1; i<=iterations; i++))
+-do
+-    sleep 120
+-done
+ 
+ printf "Burst high groups begins...\n"
+ 
+@@ -27,7 +27,7 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_1, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path -u $users_1 -r $rate --run-time $runtime --iteration $i
++    taskset -c "$LOCUST_CPUS" python $script_path -u $users_1 -r $rate --run-time $runtime --iteration $i
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+         sleep $delay
+@@ -41,7 +41,7 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_2, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path -u $users_2 -r $rate --run-time $runtime --iteration $i
++    taskset -c "$LOCUST_CPUS" python $script_path -u $users_2 -r $rate --run-time $runtime --iteration $i
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+         sleep $delay
+@@ -55,7 +55,7 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_3, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path -u $users_3 -r $rate --run-time $runtime --iteration $i
++    taskset -c "$LOCUST_CPUS" python $script_path -u $users_3 -r $rate --run-time $runtime --iteration $i
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+         sleep $delay
+@@ -69,7 +69,7 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_4, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path -u $users_4 -r $rate --run-time $runtime --iteration $i
++    taskset -c "$LOCUST_CPUS" python $script_path -u $users_4 -r $rate --run-time $runtime --iteration $i
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+         sleep $delay
+@@ -83,7 +83,7 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_5, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path -u $users_5 -r $rate --run-time $runtime --iteration $i
++    taskset -c "$LOCUST_CPUS" python $script_path -u $users_5 -r $rate --run-time $runtime --iteration $i
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+         sleep $delay
+diff -ruN original/paper/experiment/pet_system/medium/locust_running.py fixed/paper/experiment/pet_system/medium/locust_running.py
+--- original/paper/experiment/pet_system/medium/locust_running.py	2026-11-04 22:43:48.630728710 +0530
++++ fixed/paper/experiment/pet_system/medium/locust_running.py	2026-11-04 22:49:56.259140554 +0530
+@@ -87,7 +87,7 @@
+ class PetClinicUser(HttpUser):
+     tasks = [AllTasks]
+     wait_time = constant_pacing(pacing)
+-    host = "http://145.108.225.14:8080/api/"
++    host = "http://localhost:8080/api/"
+ 
+ 
+ if __name__ == "__main__":
+diff -ruN original/paper/experiment/train_system/coarse/auto_coarse.sh fixed/paper/experiment/train_system/coarse/auto_coarse.sh
+--- original/paper/experiment/train_system/coarse/auto_coarse.sh	2026-11-04 22:46:56.498728402 +0530
++++ fixed/paper/experiment/train_system/coarse/auto_coarse.sh	2026-11-04 22:49:56.275828555 +0530
+@@ -1,13 +1,18 @@
+ #!/bin/bash
++# --- added for the WSL replication (see CHANGES.md) ---
++cd "$(dirname "$0")"                 # always run from this folder
++mkdir -p result05/coarse              # Locust log folder (did not exist)
++LOCUST_CPUS=${LOCUST_CPUS:-0,1}      # Locust on cores 0-1; containers get 2-11
++# ---------------------------------------------------------
+ 
+-iterations=10
++iterations=${ITER:-10}
+ #duration between each iteration
+ delay=30
+ 
+-script_path_1="../coarse_script/loadtesting/locust_1.py"
+-script_path_2="../coarse_script/loadtesting/locust_2.py"
+-script_path_3="../coarse_script/loadtesting/locust_3.py"
+-script_path_4="../coarse_script/loadtesting/locust_4.py"
++script_path_1="./loadtesting/locust_1.py"
++script_path_2="./loadtesting/locust_2.py"
++script_path_3="./loadtesting/locust_3.py"
++script_path_4="./loadtesting/locust_4.py"
+ 
+ 
+ users_1=10
+@@ -20,15 +25,6 @@
+ runtime="120s"
+ pacing=1
+ 
+-printf "level_0 groups begins...\n"
+-for ((i=1; i<=iterations; i++))
+-do
+-    sleep 120
+-    if [ $i -lt $iterations ]; then
+-        echo "Waiting for $delay seconds..."
+-        sleep $delay
+-    fi
+-done
+ 
+ printf "level_1 groups begins...\n"
+ 
+@@ -36,10 +32,10 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_1, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path_1 -u $users_1 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_2 -u $users_1 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_3 -u $users_1 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_4 -u $users_1 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_1 -u $users_1 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_2 -u $users_1 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_3 -u $users_1 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_4 -u $users_1 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -54,10 +50,10 @@
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_2, rate=$rate, runtime=$runtime, iteration=$i"
+ 
+-    python $script_path_1 -u $users_2 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_2 -u $users_2 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_3 -u $users_2 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_4 -u $users_2 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_1 -u $users_2 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_2 -u $users_2 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_3 -u $users_2 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_4 -u $users_2 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -72,10 +68,10 @@
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_3, rate=$rate, runtime=$runtime, iteration=$i"
+ 
+-    python $script_path_1 -u $users_3 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_2 -u $users_3 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_3 -u $users_3 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_4 -u $users_3 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_1 -u $users_3 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_2 -u $users_3 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_3 -u $users_3 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_4 -u $users_3 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -89,10 +85,10 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_4, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path_1 -u $users_4 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_2 -u $users_4 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_3 -u $users_4 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_4 -u $users_4 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_1 -u $users_4 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_2 -u $users_4 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_3 -u $users_4 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_4 -u $users_4 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -107,10 +103,10 @@
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_5, rate=$rate, runtime=$runtime, iteration=$i"
+ 
+-    python $script_path_1 -u $users_5 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_2 -u $users_5 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_3 -u $users_5 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_4 -u $users_5 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_1 -u $users_5 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_2 -u $users_5 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_3 -u $users_5 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_4 -u $users_5 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+diff -ruN original/paper/experiment/train_system/coarse/loadtesting/locust_1.py fixed/paper/experiment/train_system/coarse/loadtesting/locust_1.py
+--- original/paper/experiment/train_system/coarse/loadtesting/locust_1.py	2026-11-04 22:48:45.405373147 +0530
++++ fixed/paper/experiment/train_system/coarse/loadtesting/locust_1.py	2026-11-04 22:49:56.260455115 +0530
+@@ -33,51 +33,51 @@
+             "name": name,
+             "stayTime": 2
+         }
+-        self.client.post("//145.108.225.14:12345/api/v1/stationservice/stations", json=payload)
++        self.client.post("http://localhost:12345/api/v1/stationservice/stations", json=payload)
+ 
+     @task
+     def task_2(self):
+-        self.client.get("//145.108.225.14:17525/api/v1/priceservice/prices")
++        self.client.get("http://localhost:17525/api/v1/priceservice/prices")
+ 
+     @task
+     def task_3(self):
+-        self.client.get("//145.108.225.14:14567/api/v1/trainfoodservice/trainfoods")
++        self.client.get("http://localhost:14567/api/v1/trainfoodservice/trainfoods")
+ 
+     @task
+     def task_4(self):
+-        self.client.get("//145.108.225.14:14567/api/v1/trainservice/trains")
++        self.client.get("http://localhost:14567/api/v1/trainservice/trains")
+ 
+     @task
+     def task_5(self):
+-        self.client.get("//145.108.225.14:12346/api/v1/routeservice/routes")
++        self.client.get("http://localhost:12346/api/v1/routeservice/routes")
+ 
+     @task
+     def task_6(self):
+-        self.client.get("//145.108.225.14:12347/api/v1/contactservice/contacts")
++        self.client.get("http://localhost:12347/api/v1/contactservice/contacts")
+ 
+     @task
+     def task_7(self):
+-        self.client.get("//145.108.225.14:18767/api/v1/adminbasicservice/adminbasic/contacts")
++        self.client.get("http://localhost:18767/api/v1/adminbasicservice/adminbasic/contacts")
+ 
+     @task
+     def task_8(self):
+ 
+-        self.client.get("//145.108.225.14:18767/api/v1/adminbasicservice/adminbasic/prices")
++        self.client.get("http://localhost:18767/api/v1/adminbasicservice/adminbasic/prices")
+ 
+     @task
+     def task_9(self):
+-        self.client.get("//145.108.225.14:18767/api/v1/adminorderservice/adminorder")
++        self.client.get("http://localhost:18767/api/v1/adminorderservice/adminorder")
+ 
+     @task
+     def task_10(self):
+         cities = ["beijing", "shanghai", "xuzhou", "hangzhou"]
+         city = random.choice(cities)
+-        self.client.get(f"//145.108.225.14:18888/api/v1/basicservice/basic/{city}")
++        self.client.get(f"http://localhost:18888/api/v1/basicservice/basic/{city}")
+ 
+ class PetClinicUser(HttpUser):
+     tasks = [StationServiceTask]
+     wait_time = constant_pacing(pacing)
+-    host = "http:"
++    host = "http://localhost"
+ 
+ if __name__ == "__main__":
+     import os
+diff -ruN original/paper/experiment/train_system/coarse/loadtesting/locust_2.py fixed/paper/experiment/train_system/coarse/loadtesting/locust_2.py
+--- original/paper/experiment/train_system/coarse/loadtesting/locust_2.py	2026-11-04 22:48:45.405452530 +0530
++++ fixed/paper/experiment/train_system/coarse/loadtesting/locust_2.py	2026-11-04 22:49:56.260988866 +0530
+@@ -27,29 +27,29 @@
+ class StationServiceTask(TaskSet):
+     @task
+     def task_11(self):
+-        self.client.get("//145.108.225.14:17853/api/v1/orderservice/order")
++        self.client.get("http://localhost:17853/api/v1/orderservice/order")
+ 
+     @task
+     def task_12(self):
+         orderId = "9bb0ac3e-b305-4929-84a9-2dfac9de3471"
+-        self.client.get(f"//145.108.225.14:17853/api/v1/orderservice/order/{orderId}")
++        self.client.get(f"http://localhost:17853/api/v1/orderservice/order/{orderId}")
+ 
+     @task
+     def task_13(self):
+-        self.client.get("//145.108.225.14:18673/api/v1/orderOtherService/orderOther")
++        self.client.get("http://localhost:18673/api/v1/orderOtherService/orderOther")
+ 
+     @task
+     def task_14(self):
+-        self.client.get("//145.108.225.14:14567/api/v1/seatservice/welcome")
++        self.client.get("http://localhost:14567/api/v1/seatservice/welcome")
+ 
+     @task
+     def task_15(self):
+         cities = ["beijing", "shanghai", "nanjing", "hangzhou"]
+-        self.client.get("//145.108.225.14:12345/api/v1/stationfoodservice/stationfoodstores", json=cities)
++        self.client.get("http://localhost:12345/api/v1/stationfoodservice/stationfoodstores", json=cities)
+ 
+     @task
+     def task_16(self):
+-        self.client.get("//145.108.225.14:12345/api/v1/travel2service/trips")
++        self.client.get("http://localhost:12345/api/v1/travel2service/trips")
+ 
+     @task
+     def task_17(self):
+@@ -63,19 +63,19 @@
+             "userId": "4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f",
+             "userName": "fdse_microservice"
+         }
+-        self.client.put("//145.108.225.14:12346/api/v1/userservice/users", json=user)
++        self.client.put("http://localhost:12346/api/v1/userservice/users", json=user)
+ 
+     @task
+     def task_18(self):
+-        self.client.get("//145.108.225.14:17525/api/v1/admintravelservice/admintravel")
++        self.client.get("http://localhost:17525/api/v1/admintravelservice/admintravel")
+ 
+     @task
+     def task_19(self):
+-        self.client.get("//145.108.225.14:18767/api/v1/adminrouteservice/adminroute")
++        self.client.get("http://localhost:18767/api/v1/adminrouteservice/adminroute")
+ 
+     @task
+     def task_20(self):
+-        self.client.get("//145.108.225.14:18888/api/v1/adminuserservice/users")
++        self.client.get("http://localhost:18888/api/v1/adminuserservice/users")
+ 
+ 
+ 
+@@ -83,7 +83,7 @@
+ class PetClinicUser(HttpUser):
+     tasks = [StationServiceTask]
+     wait_time = constant_pacing(pacing)
+-    host = "http:"
++    host = "http://localhost"
+ 
+ if __name__ == "__main__":
+     import os
+diff -ruN original/paper/experiment/train_system/coarse/loadtesting/locust_3.py fixed/paper/experiment/train_system/coarse/loadtesting/locust_3.py
+--- original/paper/experiment/train_system/coarse/loadtesting/locust_3.py	2026-11-04 22:48:45.405495451 +0530
++++ fixed/paper/experiment/train_system/coarse/loadtesting/locust_3.py	2026-11-04 22:49:56.261413042 +0530
+@@ -28,11 +28,11 @@
+ 
+     @task
+     def task_21(self):
+-        self.client.get("//145.108.225.14:18888/api/v1/assuranceservice/assurances")
++        self.client.get("http://localhost:18888/api/v1/assuranceservice/assurances")
+ 
+     @task
+     def task_22(self):
+-        self.client.get("//145.108.225.14:12347/api/v1/configservice/configs")
++        self.client.get("http://localhost:12347/api/v1/configservice/configs")
+ 
+     @task
+     def task_23(self):
+@@ -44,41 +44,41 @@
+             "initialWeight": 1,
+             "withinPrice": 2
+         }
+-        self.client.post("//145.108.225.14:12347/api/v1/consignpriceservice/consignprice", json=price)
++        self.client.post("http://localhost:12347/api/v1/consignpriceservice/consignprice", json=price)
+ 
+     @task
+     def task_24(self):
+         id = "4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f"
+-        self.client.get(f"//145.108.225.14:12347/api/v1/consignservice/consigns/account/{id}")
++        self.client.get(f"http://localhost:12347/api/v1/consignservice/consigns/account/{id}")
+     @task
+     def task_25(self):
+-        self.client.get("//145.108.225.14:17853/api/v1/notifyservice/test_send_mq")
++        self.client.get("http://localhost:17853/api/v1/notifyservice/test_send_mq")
+ 
+     @task
+     def task_26(self):
+-        self.client.get("//145.108.225.14:14567/api/v1/securityservice/securityConfigs")
++        self.client.get("http://localhost:14567/api/v1/securityservice/securityConfigs")
+ 
+     @task
+     def task_27(self):
+         tripId = "G1234"
+-        self.client.get(f"//145.108.225.14:12346/api/v1/travelservice/train_types/{tripId}")
++        self.client.get(f"http://localhost:12346/api/v1/travelservice/train_types/{tripId}")
+ 
+     @task
+     def task_28(self):
+-        self.client.get("//145.108.225.14:18888/api/v1/cancelservice/welcome")
++        self.client.get("http://localhost:18888/api/v1/cancelservice/welcome")
+ 
+     @task
+     def task_29(self):
+-        self.client.get("//145.108.225.14:18856/api/v1/executeservice/welcome")
++        self.client.get("http://localhost:18856/api/v1/executeservice/welcome")
+ 
+     @task
+     def task_30(self):
+-        self.client.get("//145.108.225.14:18856/api/v1/fooddeliveryservice/orders/all")
++        self.client.get("http://localhost:18856/api/v1/fooddeliveryservice/orders/all")
+ 
+ class PetClinicUser(HttpUser):
+     tasks = [StationServiceTask]
+     wait_time = constant_pacing(pacing)
+-    host = "http:"
++    host = "http://localhost"
+ 
+ if __name__ == "__main__":
+     import os
+diff -ruN original/paper/experiment/train_system/coarse/loadtesting/locust_4.py fixed/paper/experiment/train_system/coarse/loadtesting/locust_4.py
+--- original/paper/experiment/train_system/coarse/loadtesting/locust_4.py	2026-11-04 22:48:45.405533304 +0530
++++ fixed/paper/experiment/train_system/coarse/loadtesting/locust_4.py	2026-11-04 22:49:56.261803050 +0530
+@@ -28,33 +28,33 @@
+ 
+     @task
+     def task_31(self):
+-        self.client.get("//145.108.225.14:18856/api/v1/foodservice/orders")
++        self.client.get("http://localhost:18856/api/v1/foodservice/orders")
+ 
+     @task
+     def task_32(self):
+-        self.client.get("//145.108.225.14:18673/api/v1/inside_pay_service/inside_payment/account")
++        self.client.get("http://localhost:18673/api/v1/inside_pay_service/inside_payment/account")
+ 
+     @task
+     def task_33(self):
+         travelDate = "2013-08-09"
+         trainNumber = "1"
+-        self.client.get(f"//145.108.225.14:18673/api/v1/orderOtherService/orderOther/{travelDate}/{trainNumber}")
++        self.client.get(f"http://localhost:18673/api/v1/orderOtherService/orderOther/{travelDate}/{trainNumber}")
+ 
+     @task
+     def task_34(self):
+-        self.client.get("//145.108.225.14:17853/api/v1/paymentservice/payment")
++        self.client.get("http://localhost:17853/api/v1/paymentservice/payment")
+ 
+     @task
+     def task_35(self):
+-        self.client.get("//145.108.225.14:18856/api/v1/preserveservice/welcome")
++        self.client.get("http://localhost:18856/api/v1/preserveservice/welcome")
+ 
+     @task
+     def task_36(self):
+-        self.client.get("//145.108.225.14:17525/api/v1/rebookservice/welcome")
++        self.client.get("http://localhost:17525/api/v1/rebookservice/welcome")
+ 
+     @task
+     def task_37(self):
+-        self.client.get("//145.108.225.14:17525/api/v1/waitorderservice/orders")
++        self.client.get("http://localhost:17525/api/v1/waitorderservice/orders")
+ 
+     @task
+     def task_38(self):
+@@ -63,7 +63,7 @@
+             "endPlace": "shanghai",
+             "startPlace": "nanjing"
+         }
+-        self.client.post("//145.108.225.14:12345/api/v1/travelplanservice/travelPlan/cheapest", json=data)
++        self.client.post("http://localhost:12345/api/v1/travelplanservice/travelPlan/cheapest", json=data)
+ 
+     @task
+     def task_39(self):
+@@ -73,16 +73,16 @@
+             "startStation": "nanjing",
+             "travelDate": "2013-08-01"
+         }
+-        self.client.post("//145.108.225.14:12346/api/v1/routeplanservice/routePlan/cheapestRoute", json=data)
++        self.client.post("http://localhost:12346/api/v1/routeplanservice/routePlan/cheapestRoute", json=data)
+ 
+     @task
+     def task_40(self):
+-        self.client.get("//145.108.225.14:18673/api/v1/preserveotherservice/welcome")
++        self.client.get("http://localhost:18673/api/v1/preserveotherservice/welcome")
+ 
+ class PetClinicUser(HttpUser):
+     tasks = [StationServiceTask]
+     wait_time = constant_pacing(pacing)
+-    host = "http:"
++    host = "http://localhost"
+ 
+ if __name__ == "__main__":
+     import os
+diff -ruN original/paper/experiment/train_system/fine/auto_fine.sh fixed/paper/experiment/train_system/fine/auto_fine.sh
+--- original/paper/experiment/train_system/fine/auto_fine.sh	2026-11-04 22:47:22.090728360 +0530
++++ fixed/paper/experiment/train_system/fine/auto_fine.sh	2026-11-04 22:49:56.278688981 +0530
+@@ -1,13 +1,18 @@
+ #!/bin/bash
++# --- added for the WSL replication (see CHANGES.md) ---
++cd "$(dirname "$0")"                 # always run from this folder
++mkdir -p result05/fine              # Locust log folder (did not exist)
++LOCUST_CPUS=${LOCUST_CPUS:-0,1}      # Locust on cores 0-1; containers get 2-11
++# ---------------------------------------------------------
+ 
+-iterations=10
++iterations=${ITER:-10}
+ #duration between each iteration
+ delay=30
+ 
+-script_path_1="../fine_script/loadtesting/locust_1.py"
+-script_path_2="../fine_script/loadtesting/locust_2.py"
+-script_path_3="../fine_script/loadtesting/locust_3.py"
+-script_path_4="../fine_script/loadtesting/locust_4.py"
++script_path_1="./loadtesting/locust_1.py"
++script_path_2="./loadtesting/locust_2.py"
++script_path_3="./loadtesting/locust_3.py"
++script_path_4="./loadtesting/locust_4.py"
+ 
+ users_1=10
+ users_2=30
+@@ -19,15 +24,6 @@
+ runtime="120s"
+ pacing=1
+ 
+-printf "level_0 groups begins...\n"
+-for ((i=1; i<=iterations; i++))
+-do
+-    sleep 120
+-    if [ $i -lt $iterations ]; then
+-        echo "Waiting for $delay seconds..."
+-        sleep $delay
+-    fi
+-done
+ 
+ 
+ printf "level_1 groups begins...\n"
+@@ -36,10 +32,10 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_1, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path_1 -u $users_1 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_2 -u $users_1 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_3 -u $users_1 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_4 -u $users_1 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_1 -u $users_1 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_2 -u $users_1 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_3 -u $users_1 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_4 -u $users_1 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -53,10 +49,10 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_2, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path_1 -u $users_2 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_2 -u $users_2 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_3 -u $users_2 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_4 -u $users_2 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_1 -u $users_2 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_2 -u $users_2 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_3 -u $users_2 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_4 -u $users_2 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -70,10 +66,10 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_3, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path_1 -u $users_3 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_2 -u $users_3 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_3 -u $users_3 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_4 -u $users_3 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_1 -u $users_3 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_2 -u $users_3 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_3 -u $users_3 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_4 -u $users_3 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -87,10 +83,10 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_4, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path_1 -u $users_4 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_2 -u $users_4 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_3 -u $users_4 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_4 -u $users_4 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_1 -u $users_4 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_2 -u $users_4 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_3 -u $users_4 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_4 -u $users_4 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -105,10 +101,10 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_5, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path_1 -u $users_5 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_2 -u $users_5 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_3 -u $users_5 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_4 -u $users_5 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_1 -u $users_5 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_2 -u $users_5 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_3 -u $users_5 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_4 -u $users_5 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+diff -ruN original/paper/experiment/train_system/fine/docker-compose.yml fixed/paper/experiment/train_system/fine/docker-compose.yml
+--- original/paper/experiment/train_system/fine/docker-compose.yml	2026-11-04 22:46:39.122728431 +0530
++++ fixed/paper/experiment/train_system/fine/docker-compose.yml	2026-11-04 22:49:56.278902078 +0530
+@@ -217,7 +217,7 @@
+         - my-network
+     environment:
+         - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://ts-discovery-service:8761/eureka/
+-         - RABBITMQ_HOST=rabbitmq
++        - RABBITMQ_HOST=rabbitmq
+     depends_on:
+         - ts-discovery-service
+         - ts-price-mysql
+diff -ruN original/paper/experiment/train_system/fine/loadtesting/locust_1.py fixed/paper/experiment/train_system/fine/loadtesting/locust_1.py
+--- original/paper/experiment/train_system/fine/loadtesting/locust_1.py	2026-11-04 22:48:45.405952634 +0530
++++ fixed/paper/experiment/train_system/fine/loadtesting/locust_1.py	2026-11-04 22:49:56.266633603 +0530
+@@ -33,52 +33,52 @@
+             "name": name,
+             "stayTime": 2
+         }
+-        self.client.post("//145.108.225.14:12345/api/v1/stationservice/stations", json=payload)
++        self.client.post("http://localhost:12345/api/v1/stationservice/stations", json=payload)
+ 
+     @task
+     def get_request_2(self):
+-        self.client.get("//145.108.225.14:16579/api/v1/priceservice/prices")
++        self.client.get("http://localhost:16579/api/v1/priceservice/prices")
+ 
+     @task
+     def get_request_3(self):
+-        self.client.get("//145.108.225.14:19999/api/v1/trainfoodservice/trainfoods")
++        self.client.get("http://localhost:19999/api/v1/trainfoodservice/trainfoods")
+ 
+     @task
+     def get_request_4(self):
+-        self.client.get("//145.108.225.14:14567/api/v1/trainservice/trains")
++        self.client.get("http://localhost:14567/api/v1/trainservice/trains")
+ 
+     @task
+     def get_request_5(self):
+-        self.client.get("//145.108.225.14:11178/api/v1/routeservice/routes")
++        self.client.get("http://localhost:11178/api/v1/routeservice/routes")
+ 
+     @task
+     def get_request_6(self):
+-        self.client.get("//145.108.225.14:12347/api/v1/contactservice/contacts")
++        self.client.get("http://localhost:12347/api/v1/contactservice/contacts")
+ 
+     @task
+     def get_request_7(self):
+-        self.client.get("//145.108.225.14:18767/api/v1/adminbasicservice/adminbasic/contacts")
++        self.client.get("http://localhost:18767/api/v1/adminbasicservice/adminbasic/contacts")
+ 
+     @task
+     def get_request_8(self):
+ 
+-        self.client.get("//145.108.225.14:18769/api/v1/adminbasicservice03/adminbasic/configs")
++        self.client.get("http://localhost:18769/api/v1/adminbasicservice03/adminbasic/configs")
+ 
+     @task
+     def get_request_9(self):
+-        self.client.get("//145.108.225.14:16112/api/v1/adminorderservice/adminorder")
++        self.client.get("http://localhost:16112/api/v1/adminorderservice/adminorder")
+ 
+     @task
+     def get_request_10(self):
+         cities = ["beijing", "shanghai", "xuzhou", "hangzhou"]
+         city = random.choice(cities)
+-        self.client.get(f"//145.108.225.14:15680/api/v1/basicservice/basic/{city}")
++        self.client.get(f"http://localhost:15680/api/v1/basicservice/basic/{city}")
+ 
+ 
+ class PetClinicUser(HttpUser):
+     tasks = [StationServiceTask]
+     wait_time = constant_pacing(pacing)
+-    host = "http:"
++    host = "http://localhost"
+ 
+ if __name__ == "__main__":
+     import os
+diff -ruN original/paper/experiment/train_system/fine/loadtesting/locust_2.py fixed/paper/experiment/train_system/fine/loadtesting/locust_2.py
+--- original/paper/experiment/train_system/fine/loadtesting/locust_2.py	2026-11-04 22:48:45.405999309 +0530
++++ fixed/paper/experiment/train_system/fine/loadtesting/locust_2.py	2026-11-04 22:49:56.266995628 +0530
+@@ -28,16 +28,16 @@
+ 
+     @task
+     def get_request_11(self):
+-        self.client.get("//145.108.225.14:12031/api/v1/orderservice/order")
++        self.client.get("http://localhost:12031/api/v1/orderservice/order")
+ 
+     @task
+     def get_request12(self):
+         orderId = "9bb0ac3e-b305-4929-84a9-2dfac9de3471"
+-        self.client.get(f"//145.108.225.14:12033/api/v1/orderservice02/order/{orderId}")
++        self.client.get(f"http://localhost:12033/api/v1/orderservice02/order/{orderId}")
+ 
+     @task
+     def get_request13(self):
+-        self.client.get("//145.108.225.14:12032/api/v1/orderOtherService/orderOther")
++        self.client.get("http://localhost:12032/api/v1/orderOtherService/orderOther")
+ 
+     @task
+     def get_request14(self):
+@@ -52,17 +52,17 @@
+                   "trainNumber": "string",
+                   "travelDate": "string"
+             }
+-        #self.client.post("//145.108.225.14:18898/api/v1/seatservice/left_tickets", json=seat)
+-        self.client.get("//145.108.225.14:18898/api/v1/seatservice/welcome")
++        #self.client.post("http://localhost:18898/api/v1/seatservice/left_tickets", json=seat)
++        self.client.get("http://localhost:18898/api/v1/seatservice/welcome")
+ 
+     @task
+     def get_request15(self):
+         cities = ["beijing", "shanghai", "nanjing", "hangzhou"]
+-        self.client.get("//145.108.225.14:18855/api/v1/stationfoodservice/stationfoodstores", json=cities)
++        self.client.get("http://localhost:18855/api/v1/stationfoodservice/stationfoodstores", json=cities)
+ 
+     @task
+     def get_request16(self):
+-        self.client.get("//145.108.225.14:16346/api/v1/travel2service/trips")
++        self.client.get("http://localhost:16346/api/v1/travel2service/trips")
+ 
+     @task
+     def get_request17(self):
+@@ -76,19 +76,19 @@
+             "userId": "4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f",
+             "userName": "fdse_microservice"
+         }
+-        self.client.put("//145.108.225.14:12342/api/v1/userservice/users", json=user)
++        self.client.put("http://localhost:12342/api/v1/userservice/users", json=user)
+ 
+     @task
+     def get_request18(self):
+-        self.client.get("//145.108.225.14:16114/api/v1/admintravelservice/admintravel")
++        self.client.get("http://localhost:16114/api/v1/admintravelservice/admintravel")
+ 
+     @task
+     def get_request19(self):
+-        self.client.get("//145.108.225.14:16113/api/v1/adminrouteservice/adminroute")
++        self.client.get("http://localhost:16113/api/v1/adminrouteservice/adminroute")
+ 
+     @task
+     def get_request20(self):
+-        self.client.get("//145.108.225.14:16115/api/v1/adminuserservice/users")
++        self.client.get("http://localhost:16115/api/v1/adminuserservice/users")
+ 
+ 
+ 
+@@ -96,7 +96,7 @@
+ class PetClinicUser(HttpUser):
+     tasks = [StationServiceTask]
+     wait_time = constant_pacing(pacing)
+-    host = "http:"
++    host = "http://localhost"
+ 
+ if __name__ == "__main__":
+     import os
+diff -ruN original/paper/experiment/train_system/fine/loadtesting/locust_3.py fixed/paper/experiment/train_system/fine/loadtesting/locust_3.py
+--- original/paper/experiment/train_system/fine/loadtesting/locust_3.py	2026-11-04 22:48:45.406041328 +0530
++++ fixed/paper/experiment/train_system/fine/loadtesting/locust_3.py	2026-11-04 22:49:56.268839021 +0530
+@@ -28,11 +28,11 @@
+ 
+     @task
+     def get_request21(self):
+-        self.client.get("//145.108.225.14:18888/api/v1/assuranceservice/assurances")
++        self.client.get("http://localhost:18888/api/v1/assuranceservice/assurances")
+ 
+     @task
+     def get_request22(self):
+-        self.client.get("//145.108.225.14:15679/api/v1/configservice/configs")
++        self.client.get("http://localhost:15679/api/v1/configservice/configs")
+ 
+     @task
+     def post_request23(self):
+@@ -44,47 +44,47 @@
+             "initialWeight": 1,
+             "withinPrice": 2
+         }
+-        self.client.post("//145.108.225.14:16110/api/v1/consignpriceservice/consignprice", json=price)
++        self.client.post("http://localhost:16110/api/v1/consignpriceservice/consignprice", json=price)
+ 
+     @task
+     def get_request24(self):
+         id = "4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f"
+-        self.client.get(f"//145.108.225.14:16111/api/v1/consignservice/consigns/account/{id}")
++        self.client.get(f"http://localhost:16111/api/v1/consignservice/consigns/account/{id}")
+     @task
+     def get_request25(self):
+-        self.client.get("//145.108.225.14:17853/api/v1/notifyservice/test_send_mq")
++        self.client.get("http://localhost:17853/api/v1/notifyservice/test_send_mq")
+ 
+     @task
+     def get_request26(self):
+-        self.client.get("//145.108.225.14:11188/api/v1/securityservice/securityConfigs")
++        self.client.get("http://localhost:11188/api/v1/securityservice/securityConfigs")
+ 
+     @task
+     def get_request27(self):
+         tripId = "G1234"
+-        self.client.get(f"//145.108.225.14:12346/api/v1/travelservice/train_types/{tripId}")
++        self.client.get(f"http://localhost:12346/api/v1/travelservice/train_types/{tripId}")
+ 
+     @task
+     def get_request28(self):
+         orderId = "95575bcc-7f64-42ce-a21a-832641b57f85"
+-        #self.client.get("//145.108.225.14:18885/api/v1/cancelservice/welcome")
+-        self.client.get("//145.108.225.14:18885/api/v1/cancelservice/cancel/95575bcc-7f64-42ce-a21a-832641b57f85/1")
++        #self.client.get("http://localhost:18885/api/v1/cancelservice/welcome")
++        self.client.get("http://localhost:18885/api/v1/cancelservice/cancel/95575bcc-7f64-42ce-a21a-832641b57f85/1")
+ 
+ 
+     @task
+     def get_request29(self):
+         orderId = "95575bcc-7f64-42ce-a21a-832641b57f85"
+-        #self.client.get(f"//145.108.225.14.12386/api/v1/executeservice/execute/collected/{orderId}")
+-        self.client.get("145.108.225.14:12386/api/v1/executeservice/welcome")
++        #self.client.get(f"//localhost.12386/api/v1/executeservice/execute/collected/{orderId}")
++        self.client.get("http://localhost:12386/api/v1/executeservice/welcome")
+ 
+     @task
+     def get_request30(self):
+-        self.client.get("//145.108.225.14:18957/api/v1/fooddeliveryservice/orders/all")
++        self.client.get("http://localhost:18957/api/v1/fooddeliveryservice/orders/all")
+ 
+ 
+ class PetClinicUser(HttpUser):
+     tasks = [StationServiceTask]
+     wait_time = constant_pacing(pacing)
+-    host = "http:"
++    host = "http://localhost"
+ 
+ if __name__ == "__main__":
+     import os
+diff -ruN original/paper/experiment/train_system/fine/loadtesting/locust_4.py fixed/paper/experiment/train_system/fine/loadtesting/locust_4.py
+--- original/paper/experiment/train_system/fine/loadtesting/locust_4.py	2026-11-04 22:48:45.406089112 +0530
++++ fixed/paper/experiment/train_system/fine/loadtesting/locust_4.py	2026-11-04 22:49:56.269163659 +0530
+@@ -28,25 +28,25 @@
+ 
+     @task
+     def get_request31(self):
+-        self.client.get("//145.108.225.14:18856/api/v1/foodservice/orders")
++        self.client.get("http://localhost:18856/api/v1/foodservice/orders")
+ 
+     @task
+     def get_request32(self):
+-        self.client.get("//145.108.225.14:18673/api/v1/inside_pay_service/inside_payment/account")
++        self.client.get("http://localhost:18673/api/v1/inside_pay_service/inside_payment/account")
+ 
+     @task
+     def get_request33(self):
+         travelDate = "2013-08-09"
+         trainNumber = "1"
+-        self.client.get(f"//145.108.225.14:12034/api/v1/orderOtherService02/orderOther/{travelDate}/{trainNumber}")
++        self.client.get(f"http://localhost:12034/api/v1/orderOtherService02/orderOther/{travelDate}/{trainNumber}")
+ 
+     @task
+     def get_request34(self):
+-        self.client.get("//145.108.225.14:19001/api/v1/paymentservice/payment")
++        self.client.get("http://localhost:19001/api/v1/paymentservice/payment")
+ 
+     @task
+     def get_request35(self):
+-        self.client.get("//145.108.225.14:14568/api/v1/preserveservice/welcome")
++        self.client.get("http://localhost:14568/api/v1/preserveservice/welcome")
+ 
+     @task
+     def get_request36(self):
+@@ -58,12 +58,12 @@
+                   "seatType": 0,
+                   "tripId": "string"
+               }
+-        self.client.post("//145.108.225.14:18886/api/v1/rebookservice/rebook/difference", json=info)
++        self.client.post("http://localhost:18886/api/v1/rebookservice/rebook/difference", json=info)
+ 
+ 
+     @task
+     def get_request37(self):
+-        self.client.get("//145.108.225.14:17525/api/v1/waitorderservice/orders")
++        self.client.get("http://localhost:17525/api/v1/waitorderservice/orders")
+ 
+     @task
+     def post_request38(self):
+@@ -72,7 +72,7 @@
+             "endPlace": "shanghai",
+             "startPlace": "nanjing"
+         }
+-        self.client.post("//145.108.225.14:14322/api/v1/travelplanservice/travelPlan/cheapest", json=data)
++        self.client.post("http://localhost:14322/api/v1/travelplanservice/travelPlan/cheapest", json=data)
+ 
+     @task
+     def post_request39(self):
+@@ -82,16 +82,16 @@
+             "startStation": "nanjing",
+             "travelDate": "2013-08-01"
+         }
+-        self.client.post("//145.108.225.14:14578/api/v1/routeplanservice/routePlan/cheapestRoute", json=data)
++        self.client.post("http://localhost:14578/api/v1/routeplanservice/routePlan/cheapestRoute", json=data)
+ 
+     @task
+     def get_request40(self):
+-        self.client.get("//145.108.225.14:14569/api/v1/preserveotherservice/welcome")
++        self.client.get("http://localhost:14569/api/v1/preserveotherservice/welcome")
+ 
+ class PetClinicUser(HttpUser):
+     tasks = [StationServiceTask]
+     wait_time = constant_pacing(pacing)
+-    host = "http:"
++    host = "http://localhost"
+ 
+ if __name__ == "__main__":
+     import os
+diff -ruN original/paper/experiment/train_system/medium/auto_med.sh fixed/paper/experiment/train_system/medium/auto_med.sh
+--- original/paper/experiment/train_system/medium/auto_med.sh	2026-11-04 22:47:09.402728381 +0530
++++ fixed/paper/experiment/train_system/medium/auto_med.sh	2026-11-04 22:49:56.277335939 +0530
+@@ -1,13 +1,18 @@
+ #!/bin/bash
++# --- added for the WSL replication (see CHANGES.md) ---
++cd "$(dirname "$0")"                 # always run from this folder
++mkdir -p result05/medium              # Locust log folder (did not exist)
++LOCUST_CPUS=${LOCUST_CPUS:-0,1}      # Locust on cores 0-1; containers get 2-11
++# ---------------------------------------------------------
+ 
+-iterations=10
++iterations=${ITER:-10}
+ #duration between each iteration
+ delay=30
+ 
+-script_path_1="../medium_script/loadtesting/locust_1.py"
+-script_path_2="../medium_script/loadtesting/locust_2.py"
+-script_path_3="../medium_script/loadtesting/locust_3.py"
+-script_path_4="../medium_script/loadtesting/locust_4.py"
++script_path_1="./loadtesting/locust_1.py"
++script_path_2="./loadtesting/locust_2.py"
++script_path_3="./loadtesting/locust_3.py"
++script_path_4="./loadtesting/locust_4.py"
+ 
+ 
+ users_1=10
+@@ -20,15 +25,6 @@
+ runtime="120s"
+ pacing=1
+ 
+-printf "level_0 groups begins...\n"
+-for ((i=1; i<=3; i++))
+-do
+-    sleep 120
+-    if [ $i -lt $iterations ]; then
+-        echo "Waiting for $delay seconds..."
+-        sleep $delay
+-    fi
+-done
+ 
+ printf "level_1 groups begins...\n"
+ 
+@@ -36,10 +32,10 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_1, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path_1 -u $users_1 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_2 -u $users_1 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_3 -u $users_1 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_4 -u $users_1 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_1 -u $users_1 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_2 -u $users_1 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_3 -u $users_1 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_4 -u $users_1 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -53,10 +49,10 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_2, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path_1 -u $users_2 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_2 -u $users_2 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_3 -u $users_2 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_4 -u $users_2 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_1 -u $users_2 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_2 -u $users_2 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_3 -u $users_2 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_4 -u $users_2 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -71,10 +67,10 @@
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_3, rate=$rate, runtime=$runtime, iteration=$i"
+ 
+-    python $script_path_1 -u $users_3 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_2 -u $users_3 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_3 -u $users_3 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_4 -u $users_3 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_1 -u $users_3 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_2 -u $users_3 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_3 -u $users_3 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_4 -u $users_3 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -88,10 +84,10 @@
+ do
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_4, rate=$rate, runtime=$runtime, iteration=$i"
+-    python $script_path_1 -u $users_4 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_2 -u $users_4 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_3 -u $users_4 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_4 -u $users_4 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_1 -u $users_4 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_2 -u $users_4 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_3 -u $users_4 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_4 -u $users_4 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+@@ -106,10 +102,10 @@
+     echo "Running iteration $i..."
+     echo "Parameters: pacing=$pacing, users=$users_5, rate=$rate, runtime=$runtime, iteration=$i"
+ 
+-    python $script_path_1 -u $users_5 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_2 -u $users_5 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_3 -u $users_5 -r $rate --run-time $runtime --iteration $i &
+-    python $script_path_4 -u $users_5 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_1 -u $users_5 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_2 -u $users_5 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_3 -u $users_5 -r $rate --run-time $runtime --iteration $i &
++    taskset -c "$LOCUST_CPUS" python $script_path_4 -u $users_5 -r $rate --run-time $runtime --iteration $i &
+     sleep 120
+     if [ $i -lt $iterations ]; then
+         echo "Waiting for $delay seconds..."
+diff -ruN original/paper/experiment/train_system/medium/loadtesting/locust_1.py fixed/paper/experiment/train_system/medium/loadtesting/locust_1.py
+--- original/paper/experiment/train_system/medium/loadtesting/locust_1.py	2026-11-04 22:48:45.405663369 +0530
++++ fixed/paper/experiment/train_system/medium/loadtesting/locust_1.py	2026-11-04 22:49:56.262264553 +0530
+@@ -33,53 +33,53 @@
+             "name": name,
+             "stayTime": 2
+         }
+-        self.client.post("//145.108.225.14:12345/api/v1/stationservice/stations", json=payload)
++        self.client.post("http://localhost:12345/api/v1/stationservice/stations", json=payload)
+ 
+     @task
+     def get_request_2(self):
+-        self.client.get("//145.108.225.14:16579/api/v1/priceservice/prices")
++        self.client.get("http://localhost:16579/api/v1/priceservice/prices")
+ 
+     @task
+     def get_request_3(self):
+-        self.client.get("//145.108.225.14:14567/api/v1/trainfoodservice/trainfoods")
++        self.client.get("http://localhost:14567/api/v1/trainfoodservice/trainfoods")
+ 
+     @task
+     def get_request_4(self):
+-        self.client.get("//145.108.225.14:14567/api/v1/trainservice/trains")
++        self.client.get("http://localhost:14567/api/v1/trainservice/trains")
+ 
+     @task
+     def get_request_5(self):
+-        self.client.get("//145.108.225.14:11178/api/v1/routeservice/routes")
++        self.client.get("http://localhost:11178/api/v1/routeservice/routes")
+ 
+     @task
+     def get_request_6(self):
+-        self.client.get("//145.108.225.14:12347/api/v1/contactservice/contacts")
++        self.client.get("http://localhost:12347/api/v1/contactservice/contacts")
+ 
+     @task
+     def get_request_7(self):
+-        self.client.get("//145.108.225.14:18767/api/v1/adminbasicservice/adminbasic/contacts")
++        self.client.get("http://localhost:18767/api/v1/adminbasicservice/adminbasic/contacts")
+ 
+     @task
+     def get_request_8(self):
+ 
+-        self.client.get("//145.108.225.14:18767/api/v1/adminbasicservice/adminbasic/stations")
++        self.client.get("http://localhost:18767/api/v1/adminbasicservice/adminbasic/stations")
+ 
+     @task
+     def get_request_9(self):
+-        self.client.get("//145.108.225.14:16113/api/v1/adminorderservice/adminorder")
++        self.client.get("http://localhost:16113/api/v1/adminorderservice/adminorder")
+ 
+     @task
+     def get_request_10(self):
+         cities = ["beijing", "shanghai", "xuzhou", "hangzhou"]
+         city = random.choice(cities)
+-        self.client.get(f"//145.108.225.14:15680/api/v1/basicservice/basic/{city}")
++        self.client.get(f"http://localhost:15680/api/v1/basicservice/basic/{city}")
+ 
+ 
+ 
+ class PetClinicUser(HttpUser):
+     tasks = [StationServiceTask]
+     wait_time = constant_pacing(pacing)
+-    host = "http:"
++    host = "http://localhost"
+ 
+ if __name__ == "__main__":
+     import os
+diff -ruN original/paper/experiment/train_system/medium/loadtesting/locust_2.py fixed/paper/experiment/train_system/medium/loadtesting/locust_2.py
+--- original/paper/experiment/train_system/medium/loadtesting/locust_2.py	2026-11-04 22:48:45.405718273 +0530
++++ fixed/paper/experiment/train_system/medium/loadtesting/locust_2.py	2026-11-04 22:49:56.262716322 +0530
+@@ -29,16 +29,16 @@
+ 
+     @task
+     def get_request_11(self):
+-        self.client.get("//145.108.225.14:12031/api/v1/orderservice/order")
++        self.client.get("http://localhost:12031/api/v1/orderservice/order")
+ 
+     @task
+     def get_request12(self):
+         orderId = "9bb0ac3e-b305-4929-84a9-2dfac9de3471"
+-        self.client.get(f"//145.108.225.14:12031/api/v1/orderservice/order/{orderId}")
++        self.client.get(f"http://localhost:12031/api/v1/orderservice/order/{orderId}")
+ 
+     @task
+     def get_request13(self):
+-        self.client.get("//145.108.225.14:12032/api/v1/orderOtherService/orderOther")
++        self.client.get("http://localhost:12032/api/v1/orderOtherService/orderOther")
+ 
+     @task
+     def get_request14(self):
+@@ -53,17 +53,17 @@
+                   "trainNumber": "string",
+                   "travelDate": "string"
+             }
+-        #self.client.post("//145.108.225.14:18898/api/v1/seatservice/left_tickets", json=seat)
+-        self.client.get("//145.108.225.14:18898/api/v1/seatservice/welcome")
++        #self.client.post("http://localhost:18898/api/v1/seatservice/left_tickets", json=seat)
++        self.client.get("http://localhost:18898/api/v1/seatservice/welcome")
+ 
+     @task
+     def get_request15(self):
+         cities = ["beijing", "shanghai", "nanjing", "hangzhou"]
+-        self.client.get("//145.108.225.14:12345/api/v1/stationfoodservice/stationfoodstores", json=cities)
++        self.client.get("http://localhost:12345/api/v1/stationfoodservice/stationfoodstores", json=cities)
+ 
+     @task
+     def get_request16(self):
+-        self.client.get("//145.108.225.14:16346/api/v1/travel2service/trips")
++        self.client.get("http://localhost:16346/api/v1/travel2service/trips")
+ 
+     @task
+     def get_request17(self):
+@@ -77,19 +77,19 @@
+             "userId": "4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f",
+             "userName": "fdse_microservice"
+         }
+-        self.client.put("//145.108.225.14:12346/api/v1/userservice/users", json=user)
++        self.client.put("http://localhost:12346/api/v1/userservice/users", json=user)
+ 
+     @task
+     def get_request18(self):
+-        self.client.get("//145.108.225.14:17525/api/v1/admintravelservice/admintravel")
++        self.client.get("http://localhost:17525/api/v1/admintravelservice/admintravel")
+ 
+     @task
+     def get_request19(self):
+-        self.client.get("//145.108.225.14:16113/api/v1/adminrouteservice/adminroute")
++        self.client.get("http://localhost:16113/api/v1/adminrouteservice/adminroute")
+ 
+     @task
+     def get_request20(self):
+-        self.client.get("//145.108.225.14:18888/api/v1/adminuserservice/users")
++        self.client.get("http://localhost:18888/api/v1/adminuserservice/users")
+ 
+ 
+ 
+@@ -97,7 +97,7 @@
+ class PetClinicUser(HttpUser):
+     tasks = [StationServiceTask]
+     wait_time = constant_pacing(pacing)
+-    host = "http:"
++    host = "http://localhost"
+ 
+ if __name__ == "__main__":
+     import os
+diff -ruN original/paper/experiment/train_system/medium/loadtesting/locust_3.py fixed/paper/experiment/train_system/medium/loadtesting/locust_3.py
+--- original/paper/experiment/train_system/medium/loadtesting/locust_3.py	2026-11-04 22:48:45.405761999 +0530
++++ fixed/paper/experiment/train_system/medium/loadtesting/locust_3.py	2026-11-04 22:49:56.265955122 +0530
+@@ -28,11 +28,11 @@
+ 
+     @task
+     def get_request21(self):
+-        self.client.get("//145.108.225.14:18888/api/v1/assuranceservice/assurances")
++        self.client.get("http://localhost:18888/api/v1/assuranceservice/assurances")
+ 
+     @task
+     def get_request22(self):
+-        self.client.get("//145.108.225.14:15679/api/v1/configservice/configs")
++        self.client.get("http://localhost:15679/api/v1/configservice/configs")
+ 
+     @task
+     def post_request23(self):
+@@ -44,47 +44,47 @@
+             "initialWeight": 1,
+             "withinPrice": 2
+         }
+-        self.client.post("//145.108.225.14:15679/api/v1/consignpriceservice/consignprice", json=price)
++        self.client.post("http://localhost:15679/api/v1/consignpriceservice/consignprice", json=price)
+ 
+     @task
+     def get_request24(self):
+         id = "4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f"
+-        self.client.get(f"//145.108.225.14:12347/api/v1/consignservice/consigns/account/{id}")
++        self.client.get(f"http://localhost:12347/api/v1/consignservice/consigns/account/{id}")
+     @task
+     def get_request25(self):
+-        self.client.get("//145.108.225.14:17853/api/v1/notifyservice/test_send_mq")
++        self.client.get("http://localhost:17853/api/v1/notifyservice/test_send_mq")
+ 
+     @task
+     def get_request26(self):
+-        self.client.get("//145.108.225.14:18898/api/v1/securityservice/securityConfigs")
++        self.client.get("http://localhost:18898/api/v1/securityservice/securityConfigs")
+ 
+     @task
+     def get_request27(self):
+         tripId = "G1234"
+-        self.client.get(f"//145.108.225.14:12346/api/v1/travelservice/train_types/{tripId}")
++        self.client.get(f"http://localhost:12346/api/v1/travelservice/train_types/{tripId}")
+ 
+     @task
+     def get_request28(self):
+         orderId = "95575bcc-7f64-42ce-a21a-832641b57f85"
+-        #self.client.get("//145.108.225.14:18885/api/v1/cancelservice/welcome")
+-        self.client.get("//145.108.225.14:15680/api/v1/cancelservice/cancel/95575bcc-7f64-42ce-a21a-832641b57f85/1")
++        #self.client.get("http://localhost:18885/api/v1/cancelservice/welcome")
++        self.client.get("http://localhost:15680/api/v1/cancelservice/cancel/95575bcc-7f64-42ce-a21a-832641b57f85/1")
+ 
+ 
+     @task
+     def get_request29(self):
+         orderId = "95575bcc-7f64-42ce-a21a-832641b57f85"
+-        #self.client.get(f"//145.108.225.14.12386/api/v1/executeservice/execute/collected/{orderId}")
+-        self.client.get("145.108.225.14:18957/api/v1/executeservice/welcome")
++        #self.client.get(f"//localhost.12386/api/v1/executeservice/execute/collected/{orderId}")
++        self.client.get("http://localhost:18957/api/v1/executeservice/welcome")
+ 
+     @task
+     def get_request30(self):
+-        self.client.get("//145.108.225.14:18957/api/v1/fooddeliveryservice/orders/all")
++        self.client.get("http://localhost:18957/api/v1/fooddeliveryservice/orders/all")
+ 
+ 
+ class PetClinicUser(HttpUser):
+     tasks = [StationServiceTask]
+     wait_time = constant_pacing(pacing)
+-    host = "http:"
++    host = "http://localhost"
+ 
+ if __name__ == "__main__":
+     import os
+diff -ruN original/paper/experiment/train_system/medium/loadtesting/locust_4.py fixed/paper/experiment/train_system/medium/loadtesting/locust_4.py
+--- original/paper/experiment/train_system/medium/loadtesting/locust_4.py	2026-11-04 22:48:45.405797095 +0530
++++ fixed/paper/experiment/train_system/medium/loadtesting/locust_4.py	2026-11-04 22:49:56.266260615 +0530
+@@ -28,25 +28,25 @@
+ 
+     @task
+     def get_request31(self):
+-        self.client.get("//145.108.225.14:18856/api/v1/foodservice/orders")
++        self.client.get("http://localhost:18856/api/v1/foodservice/orders")
+ 
+     @task
+     def get_request32(self):
+-        self.client.get("//145.108.225.14:18673/api/v1/inside_pay_service/inside_payment/account")
++        self.client.get("http://localhost:18673/api/v1/inside_pay_service/inside_payment/account")
+ 
+     @task
+     def get_request33(self):
+         travelDate = "2013-08-09"
+         trainNumber = "1"
+-        self.client.get(f"//145.108.225.14:12032/api/v1/orderOtherService/orderOther/{travelDate}/{trainNumber}")
++        self.client.get(f"http://localhost:12032/api/v1/orderOtherService/orderOther/{travelDate}/{trainNumber}")
+ 
+     @task
+     def get_request34(self):
+-        self.client.get("//145.108.225.14:17853/api/v1/paymentservice/payment")
++        self.client.get("http://localhost:17853/api/v1/paymentservice/payment")
+ 
+     @task
+     def get_request35(self):
+-        self.client.get("//145.108.225.14:18856/api/v1/preserveservice/welcome")
++        self.client.get("http://localhost:18856/api/v1/preserveservice/welcome")
+ 
+     @task
+     def get_request36(self):
+@@ -58,12 +58,12 @@
+                   "seatType": 0,
+                   "tripId": "string"
+               }
+-        self.client.post("//145.108.225.14:16579/api/v1/rebookservice/rebook/difference", json=info)
++        self.client.post("http://localhost:16579/api/v1/rebookservice/rebook/difference", json=info)
+ 
+ 
+     @task
+     def get_request37(self):
+-        self.client.get("//145.108.225.14:17525/api/v1/waitorderservice/orders")
++        self.client.get("http://localhost:17525/api/v1/waitorderservice/orders")
+ 
+     @task
+     def post_request38(self):
+@@ -72,7 +72,7 @@
+             "endPlace": "shanghai",
+             "startPlace": "nanjing"
+         }
+-        self.client.post("//145.108.225.14:16346/api/v1/travelplanservice/travelPlan/cheapest", json=data)
++        self.client.post("http://localhost:16346/api/v1/travelplanservice/travelPlan/cheapest", json=data)
+ 
+     @task
+     def post_request39(self):
+@@ -82,16 +82,16 @@
+             "startStation": "nanjing",
+             "travelDate": "2013-08-01"
+         }
+-        self.client.post("//145.108.225.14:11178/api/v1/routeplanservice/routePlan/cheapestRoute", json=data)
++        self.client.post("http://localhost:11178/api/v1/routeplanservice/routePlan/cheapestRoute", json=data)
+ 
+     @task
+     def get_request40(self):
+-        self.client.get("//145.108.225.14:18673/api/v1/preserveotherservice/welcome")
++        self.client.get("http://localhost:18673/api/v1/preserveotherservice/welcome")
+ 
+ class PetClinicUser(HttpUser):
+     tasks = [StationServiceTask]
+     wait_time = constant_pacing(pacing)
+-    host = "http:"
++    host = "http://localhost"
+ 
+ if __name__ == "__main__":
+     import os

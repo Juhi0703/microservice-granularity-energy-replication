@@ -1,0 +1,37 @@
+======================================================================
+SYSTEM: pet
+
+Mean energy (J) and change vs coarse
+granu         ours   ours %     paper  paper %
+coarse      1064.5    +0.0%    3250.3    +0.0%
+medium      1080.8    +1.5%    3328.9    +2.4%
+fine        1063.6    -0.1%    3377.2    +3.9%
+
+WITHOUT outlier removal: n = 150, removed = 0
+pair                 holm_p  cliff_d        size |  paper_p  paper_d
+fine vs. medium      1.0000   -0.082  negligible |    0.152        -
+fine vs. coarse      1.0000   -0.044  negligible |    0.001    0.221
+medium vs. coarse    1.0000   +0.089  negligible |    0.012    0.168
+
+WITH IQR outlier removal (paper method): n = 150, removed = 0
+pair                 holm_p  cliff_d        size |  paper_p  paper_d
+fine vs. medium      1.0000   -0.082  negligible |    0.152        -
+fine vs. coarse      1.0000   -0.044  negligible |    0.001    0.221
+medium vs. coarse    1.0000   +0.089  negligible |    0.012    0.168
+
+======================================================================
+SYSTEM: train
+
+Mean energy (J) and change vs coarse
+granu         ours   ours %     paper  paper %
+coarse      1404.2    +0.0%    3527.1    +0.0%
+medium      2065.8   +47.1%    4475.9   +26.9%
+
+WITHOUT outlier removal: n = 100, removed = 0
+pair                 holm_p  cliff_d        size |  paper_p  paper_d
+medium vs. coarse    0.0027   +0.349      medium |   <0.001    0.397
+
+WITH IQR outlier removal (paper method): n = 90, removed = 10
+pair                 holm_p  cliff_d        size |  paper_p  paper_d
+medium vs. coarse    0.1320   +0.186       small |   <0.001    0.397
+

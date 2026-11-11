@@ -1,0 +1,165 @@
+file: my_trials.csv
+columns: ['system', 'users', 'granu', 'trial', 'response_time', 'failure_rate', 'cpu_cores', 'power_w', 'energy_j', 'n_requests', 'n_processes', 'start']
+metrics: ['energy_j', 'response_time', 'cpu_cores']
+
+======================================================================
+SYSTEM: pet   trials = 150   granularities = ['coarse', 'fine', 'medium']
+
+[pet] energy_j  Model A: users + granularity  (adj. R2 = 0.897, n = 150)
+                  coef       p  holm_p
+Intercept     779.3956  0.0000  0.0000
+users_120      99.3755  0.0000  0.0000
+users_200     224.8296  0.0000  0.0000
+users_320     472.8406  0.0000  0.0000
+users_400     628.5327  0.0000  0.0000
+granu_fine     -0.8924  0.9551  0.9551
+granu_medium   16.2470  0.3063  0.6127
+
+[pet] energy_j  Model B: users x granularity  (adj. R2 = 0.900, n = 150)
+                            coef       p  holm_p
+Intercept               761.4943  0.0000  0.0000
+users_120                91.4528  0.0099  0.1093
+users_200               253.8398  0.0000  0.0000
+users_320               500.8828  0.0000  0.0000
+users_400               668.9096  0.0000  0.0000
+granu_fine               40.1127  0.2534  1.0000
+granu_medium             28.9458  0.4093  1.0000
+users_120:granu_fine     30.6735  0.5362  1.0000
+users_200:granu_fine    -62.8626  0.2059  1.0000
+users_320:granu_fine    -75.2473  0.1305  1.0000
+users_400:granu_fine    -97.5893  0.0505  0.5053
+users_120:granu_medium   -6.9054  0.8892  1.0000
+users_200:granu_medium  -24.1679  0.6259  1.0000
+users_320:granu_medium   -8.8793  0.8578  1.0000
+users_400:granu_medium  -23.5413  0.6349  1.0000
+  Interaction F-test (B vs A): F = 1.425, p = 0.1914
+
+[pet] response_time  Model A: users + granularity  (adj. R2 = 0.939, n = 150)
+                 coef       p  holm_p
+Intercept     31.1009  0.0000  0.0000
+users_120     34.9718  0.0000  0.0000
+users_200     59.5712  0.0000  0.0000
+users_320     81.6445  0.0000  0.0000
+users_400     88.6677  0.0000  0.0000
+granu_fine     6.8981  0.0001  0.0001
+granu_medium   5.3544  0.0016  0.0016
+
+[pet] response_time  Model B: users x granularity  (adj. R2 = 0.938, n = 150)
+                           coef       p  holm_p
+Intercept               30.8852  0.0000  0.0000
+users_120               34.3183  0.0000  0.0000
+users_200               62.2205  0.0000  0.0000
+users_320               80.9250  0.0000  0.0000
+users_400               88.4698  0.0000  0.0000
+granu_fine               9.1342  0.0161  0.1607
+granu_medium             3.7653  0.3167  1.0000
+users_120:granu_fine     1.2696  0.8110  1.0000
+users_200:granu_fine    -6.2005  0.2440  1.0000
+users_320:granu_fine    -2.7467  0.6050  1.0000
+users_400:granu_fine    -3.5029  0.5097  1.0000
+users_120:granu_medium   0.6909  0.8964  1.0000
+users_200:granu_medium  -1.7472  0.7421  1.0000
+users_320:granu_medium   4.9053  0.3562  1.0000
+users_400:granu_medium   4.0964  0.4408  1.0000
+  Interaction F-test (B vs A): F = 0.771, p = 0.6285
+
+[pet] cpu_cores  Model A: users + granularity  (adj. R2 = 0.936, n = 150)
+                coef    p  holm_p
+Intercept     0.2188  0.0     0.0
+users_120     0.1514  0.0     0.0
+users_200     0.3874  0.0     0.0
+users_320     0.7644  0.0     0.0
+users_400     1.0009  0.0     0.0
+granu_fine    0.1399  0.0     0.0
+granu_medium  0.1057  0.0     0.0
+
+[pet] cpu_cores  Model B: users x granularity  (adj. R2 = 0.936, n = 150)
+                          coef       p  holm_p
+Intercept               0.2301  0.0000  0.0000
+users_120               0.1767  0.0001  0.0012
+users_200               0.3913  0.0000  0.0000
+users_320               0.7288  0.0000  0.0000
+users_400               0.9504  0.0000  0.0000
+granu_fine              0.1456  0.0013  0.0133
+granu_medium            0.0658  0.1408  1.0000
+users_120:granu_fine   -0.0524  0.4057  1.0000
+users_200:granu_fine   -0.0403  0.5223  1.0000
+users_320:granu_fine    0.0238  0.7049  1.0000
+users_400:granu_fine    0.0403  0.5224  1.0000
+users_120:granu_medium -0.0237  0.7067  1.0000
+users_200:granu_medium  0.0285  0.6506  1.0000
+users_320:granu_medium  0.0829  0.1891  1.0000
+users_400:granu_medium  0.1114  0.0786  0.7075
+  Interaction F-test (B vs A): F = 0.965, p = 0.4661
+
+======================================================================
+SYSTEM: train   trials = 100   granularities = ['coarse', 'medium']
+
+[train] energy_j  Model A: users + granularity  (adj. R2 = 0.799, n = 100)
+                   coef       p  holm_p
+Intercept      754.3554  0.0000  0.0000
+users_120      106.0423  0.3676  0.3676
+users_200      373.0582  0.0020  0.0039
+users_320      989.5429  0.0000  0.0000
+users_400     1780.7040  0.0000  0.0000
+granu_medium   661.6004  0.0000  0.0000
+
+[train] energy_j  Model B: users x granularity  (adj. R2 = 0.965, n = 100)
+                             coef       p  holm_p
+Intercept                999.4425  0.0000  0.0000
+users_120                 95.0386  0.1747  0.5241
+users_200                329.5410  0.0000  0.0000
+users_320                677.1058  0.0000  0.0000
+users_400                922.2263  0.0000  0.0000
+granu_medium             171.4262  0.0155  0.0620
+users_120:granu_medium    22.0074  0.8233  0.8233
+users_200:granu_medium    87.0343  0.3780  0.7561
+users_320:granu_medium   624.8741  0.0000  0.0000
+users_400:granu_medium  1716.9555  0.0000  0.0000
+  Interaction F-test (B vs A): F = 111.122, p = 5.866e-34
+
+[train] response_time  Model A: users + granularity  (adj. R2 = 0.751, n = 100)
+                  coef       p  holm_p
+Intercept      21.6550  0.0037  0.0112
+users_120      22.0182  0.0213  0.0425
+users_200      64.8804  0.0000  0.0000
+users_320     111.1829  0.0000  0.0000
+users_400     137.0195  0.0000  0.0000
+granu_medium    3.5176  0.5555  0.5555
+
+[train] response_time  Model B: users x granularity  (adj. R2 = 0.745, n = 100)
+                            coef       p  holm_p
+Intercept                21.9790  0.0231  0.1616
+users_120                21.5817  0.1120  0.6720
+users_200                71.9464  0.0000  0.0000
+users_320               107.8100  0.0000  0.0000
+users_400               132.1428  0.0000  0.0000
+granu_medium              2.8696  0.8315  1.0000
+users_120:granu_medium    0.8731  0.9635  1.0000
+users_200:granu_medium  -14.1319  0.4593  1.0000
+users_320:granu_medium    6.7458  0.7236  1.0000
+users_400:granu_medium    9.7534  0.6093  1.0000
+  Interaction F-test (B vs A): F = 0.469, p = 0.7585
+
+[train] cpu_cores  Model A: users + granularity  (adj. R2 = 0.776, n = 100)
+                coef       p  holm_p
+Intercept     0.0085  0.9692  0.9692
+users_120     0.2848  0.3208  0.6417
+users_200     0.7387  0.0112  0.0335
+users_320     2.1573  0.0000  0.0000
+users_400     4.0254  0.0000  0.0000
+granu_medium  1.5692  0.0000  0.0000
+
+[train] cpu_cores  Model B: users x granularity  (adj. R2 = 0.974, n = 100)
+                          coef       p  holm_p
+Intercept               0.6257  0.0000  0.0000
+users_120               0.2578  0.0628  0.1885
+users_200               0.6292  0.0000  0.0001
+users_320               1.3711  0.0000  0.0000
+users_400               1.8622  0.0000  0.0000
+granu_medium            0.3348  0.0164  0.0655
+users_120:granu_medium  0.0540  0.7810  0.7810
+users_200:granu_medium  0.2189  0.2610  0.5220
+users_320:granu_medium  1.5725  0.0000  0.0000
+users_400:granu_medium  4.3264  0.0000  0.0000
+  Interaction F-test (B vs A): F = 181.830, p = 3.137e-42
